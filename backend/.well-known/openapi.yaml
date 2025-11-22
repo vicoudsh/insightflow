@@ -222,8 +222,6 @@ paths:
                   type: string
                 name:
                   type: string
-                technology:
-                  type: string
                 description:
                   type: string
       responses:

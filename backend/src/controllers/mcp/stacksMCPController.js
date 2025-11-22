@@ -70,7 +70,7 @@ export const getStack = async (req, res, next) => {
  */
 export const createStack = async (req, res, next) => {
   try {
-    const { project_id, name, technology, description } = req.body
+    const { project_id, name, description } = req.body
 
     if (!project_id || !name) {
       return res.status(400).json({
@@ -84,7 +84,6 @@ export const createStack = async (req, res, next) => {
     const result = await apiClient.createStack({
       project_id,
       name,
-      technology,
       description,
     })
 
@@ -110,7 +109,7 @@ export const createStack = async (req, res, next) => {
  */
 export const updateStack = async (req, res, next) => {
   try {
-    const { stack_id, name, technology, description } = req.body
+    const { stack_id, name, description } = req.body
 
     if (!stack_id) {
       return res.status(400).json({
@@ -122,7 +121,6 @@ export const updateStack = async (req, res, next) => {
 
     const updateData = {}
     if (name !== undefined) updateData.name = name
-    if (technology !== undefined) updateData.technology = technology
     if (description !== undefined) updateData.description = description
 
     // No token needed - backend uses service role key internally

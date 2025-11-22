@@ -106,12 +106,6 @@
             "maxLength": 255,
             "description": "Stack name"
           },
-          "technology": {
-            "type": "string",
-            "nullable": true,
-            "maxLength": 255,
-            "description": "Technology name"
-          },
           "description": {
             "type": "string",
             "nullable": true,
@@ -122,14 +116,9 @@
             "type": "string",
             "format": "date-time",
             "description": "Creation timestamp"
-          },
-          "updated_at": {
-            "type": "string",
-            "format": "date-time",
-            "description": "Last update timestamp"
           }
         },
-        "required": ["id", "project_id", "name", "created_at", "updated_at"]
+        "required": ["id", "project_id", "name", "created_at"]
       },
       "Roadmap": {
         "type": "object",

@@ -143,7 +143,6 @@ router.get('/tools', (req, res) => {
           properties: {
             project_id: { type: 'string' },
             name: { type: 'string' },
-            technology: { type: 'string' },
             description: { type: 'string' },
           },
           required: ['project_id', 'name'],
@@ -157,7 +156,6 @@ router.get('/tools', (req, res) => {
           properties: {
             stack_id: { type: 'string' },
             name: { type: 'string' },
-            technology: { type: 'string' },
             description: { type: 'string' },
           },
           required: ['stack_id'],

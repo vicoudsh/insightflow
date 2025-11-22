@@ -40,13 +40,11 @@ export const updateProjectSchema = createProjectSchema.partial()
 export const createStackSchema = z.object({
   project_id: z.string().uuid(),
   name: z.string().min(1).max(255),
-  technology: z.string().max(255).optional().nullable(),
   description: z.string().max(1000).optional().nullable(),
 })
 
 export const updateStackSchema = z.object({
   name: z.string().min(1).max(255).optional(),
-  technology: z.string().max(255).optional().nullable(),
   description: z.string().max(1000).optional().nullable(),
 })
 

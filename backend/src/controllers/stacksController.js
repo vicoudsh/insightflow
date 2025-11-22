@@ -83,7 +83,6 @@ export const createStack = async (req, res, next) => {
     const stackData = {
       ...req.body,
       created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
     }
 
     const { data, error } = await req.supabase
@@ -114,7 +113,6 @@ export const updateStack = async (req, res, next) => {
     // RLS will verify stack belongs to user's project
     const updateData = {
       ...req.body,
-      updated_at: new Date().toISOString(),
     }
 
     const { data, error } = await req.supabase
