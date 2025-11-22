@@ -176,6 +176,25 @@ export async function getProjects(): Promise<Project[]> {
 }
 
 /**
+ * Get stacks for a project
+ */
+export async function getStacks(projectId: string): Promise<Stack[]> {
+  if (!projectId) {
+    throw new Error('project_id is required')
+  }
+
+  try {
+    const stacksResponse = await apiRequest<{ data: Stack[]; pagination?: any } | Stack[]>(
+      `/api/stacks?project_id=${projectId}`
+    )
+    return Array.isArray(stacksResponse) ? stacksResponse : (stacksResponse.data || [])
+  } catch (error) {
+    console.error('Error fetching stacks:', error)
+    return []
+  }
+}
+
+/**
  * Get project details with stacks and roadmaps
  */
 export async function getProjectDetails(projectId: string): Promise<ProjectDetails> {

@@ -1,8 +1,9 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Loader2, AlertCircle } from 'lucide-react'
-import { getProjectDetails, ProjectDetails as ProjectDetailsType } from '@/lib/api'
+import { getProjectDetails, getStacks, ProjectDetails as ProjectDetailsType, Stack } from '@/lib/api'
+import { useStacksRealtime } from '@/hooks/useStacksRealtime'
 import StacksTable from './StacksTable'
 import RoadmapsTable from './RoadmapsTable'
 import DatabaseSchemaViewer from './DatabaseSchemaViewer'
@@ -15,6 +16,7 @@ export default function ProjectDetails({ projectId }: ProjectDetailsProps) {
   const [projectDetails, setProjectDetails] = useState<ProjectDetailsType | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [refreshingStacks, setRefreshingStacks] = useState(false)
 
   useEffect(() => {
     if (projectId) {
@@ -24,6 +26,38 @@ export default function ProjectDetails({ projectId }: ProjectDetailsProps) {
       setError(null)
     }
   }, [projectId])
+
+  // Callback to refresh stacks when Realtime events occur
+  const refreshStacks = useCallback(async () => {
+    if (!projectId || !projectDetails) return
+
+    try {
+      setRefreshingStacks(true)
+      const updatedStacks = await getStacks(projectId)
+      
+      // Update stacks in project details
+      setProjectDetails((prev) => {
+        if (!prev) return prev
+        return {
+          ...prev,
+          stacks: updatedStacks,
+        }
+      })
+      
+      console.log('Stacks refreshed via Realtime:', updatedStacks.length)
+    } catch (err) {
+      console.error('Error refreshing stacks:', err)
+    } finally {
+      setRefreshingStacks(false)
+    }
+  }, [projectId, projectDetails])
+
+  // Subscribe to Realtime changes for stacks
+  useStacksRealtime({
+    projectId,
+    onStacksChange: refreshStacks,
+    enabled: !!projectId && !!projectDetails,
+  })
 
   async function loadProjectDetails(id: string) {
     try {
