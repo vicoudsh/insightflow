@@ -8,6 +8,9 @@ import { fileURLToPath } from 'url'
 import { dirname, join } from 'path'
 import { readFile } from 'fs/promises'
 
+// Load environment variables
+dotenv.config()
+
 // Import REST API routes
 import projectsRoutes from './routes/projects.js'
 import stacksRoutes from './routes/stacks.js'
@@ -75,14 +78,20 @@ const getBaseUrl = () => {
   // Check for explicit base URL first (should not include port if already in URL)
   if (process.env.API_BASE_URL) {
     // Remove trailing slash if present
-    return process.env.API_BASE_URL.replace(/\/$/, '')
+    const url = process.env.API_BASE_URL.replace(/\/$/, '')
+    console.log('🌐 [getBaseUrl] Using API_BASE_URL:', url)
+    return url
   }
   if (process.env.SERVER_URL) {
     // Remove trailing slash if present
-    return process.env.SERVER_URL.replace(/\/$/, '')
+    const url = process.env.SERVER_URL.replace(/\/$/, '')
+    console.log('🌐 [getBaseUrl] Using SERVER_URL:', url)
+    return url
   }
   // Fallback to localhost with port
-  return `http://localhost:${process.env.PORT || 3001}`
+  const defaultUrl = `http://localhost:${process.env.PORT || 3001}`
+  console.log('🌐 [getBaseUrl] Using default URL:', defaultUrl)
+  return defaultUrl
 }
 
 // Serve .well-known/ai-plugin.json for OpenAI plugin discovery (dynamic URL)
@@ -127,31 +136,37 @@ app.get('/.well-known/openapi.yaml', async (req, res) => {
 // Serve OpenAPI specification (JSON) - preferred format (dynamic server URL)
 app.get('/.well-known/openapi.json', async (req, res) => {
   try {
+    // Reload environment variables in case they changed
+    dotenv.config()
+    
     const baseUrl = getBaseUrl()
-    console.log('🌐 [OPENAPI] Base URL from environment:', baseUrl)
-    console.log('🌐 [OPENAPI] API_BASE_URL:', process.env.API_BASE_URL)
-    console.log('🌐 [OPENAPI] SERVER_URL:', process.env.SERVER_URL)
-    console.log('🌐 [OPENAPI] PORT:', process.env.PORT)
+    console.log('🌐 [OPENAPI] Request received - Base URL:', baseUrl)
+    console.log('🌐 [OPENAPI] Environment check - API_BASE_URL:', process.env.API_BASE_URL || 'not set')
+    console.log('🌐 [OPENAPI] Environment check - SERVER_URL:', process.env.SERVER_URL || 'not set')
+    console.log('🌐 [OPENAPI] Environment check - PORT:', process.env.PORT || 'not set')
     
     const jsonPath = join(__dirname, '..', '.well-known', 'openapi.json')
     const jsonContent = await readFile(jsonPath, 'utf8')
     const schema = JSON.parse(jsonContent)
     
     // Update server URLs dynamically - always use the configured base URL
+    // Remove any trailing slashes
+    const cleanUrl = baseUrl.replace(/\/+$/, '')
+    
     schema.servers = [
       {
-        url: baseUrl,
-        description: baseUrl.includes('localhost') ? 'Development server' : 'Production server'
+        url: cleanUrl,
+        description: cleanUrl.includes('localhost') ? 'Development server' : 'Production server'
       }
     ]
     
-    console.log('🌐 [OPENAPI] Serving schema with server URL:', schema.servers[0].url)
+    console.log('🌐 [OPENAPI] Final server URL in schema:', schema.servers[0].url)
     
     res.setHeader('Content-Type', 'application/json')
     res.json(schema)
   } catch (error) {
-    console.error('Error serving openapi.json:', error)
-    res.status(500).json({ error: 'Failed to load OpenAPI schema' })
+    console.error('❌ [OPENAPI] Error serving openapi.json:', error)
+    res.status(500).json({ error: 'Failed to load OpenAPI schema', details: error.message })
   }
 })
 
