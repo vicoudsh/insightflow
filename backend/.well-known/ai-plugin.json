@@ -1,0 +1,19 @@
+{
+  "schema_version": "v1",
+  "name_for_model": "insightflow_mcp",
+  "name_for_human": "InsightFlow MCP Server",
+  "description_for_model": "InsightFlow MCP Server provides tools for managing projects, stacks, roadmaps, tasks, and subtasks. Use this plugin to create, read, update, and delete project management data. All operations require authentication via Bearer token. The server supports CRUD operations for projects, stacks, roadmaps, tasks, and subtasks with full relational data management.",
+  "description_for_human": "Manage your InsightFlow projects, stacks, roadmaps, tasks, and subtasks through AI. Create projects, organize technology stacks, plan roadmaps, track tasks, and manage subtasks.",
+  "auth": {
+    "type": "bearer",
+    "instructions": "Get your authentication token from Supabase Auth after logging in. The token should be included in the Authorization header as 'Bearer <token>'."
+  },
+  "api": {
+    "type": "openapi",
+    "url": "http://localhost:3001/.well-known/openapi.json",
+    "is_user_authenticated": true
+  },
+  "contact_email": "support@insightflow.com",
+  "legal_info_url": "https://insightflow.com/legal"
+}
+

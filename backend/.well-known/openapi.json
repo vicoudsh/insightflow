@@ -1,0 +1,941 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "InsightFlow MCP Server API",
+    "description": "MCP (Model Context Protocol) server for managing projects, stacks, roadmaps, tasks, and subtasks",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3001",
+      "description": "Local development server"
+    },
+    {
+      "url": "https://your-domain.com",
+      "description": "Production server"
+    }
+  ],
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Supabase authentication token"
+      }
+    },
+    "schemas": {
+      "Tool": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "inputSchema": {
+            "type": "object"
+          }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/mcp/tools": {
+      "get": {
+        "summary": "Get available MCP tools",
+        "description": "Returns a list of all available MCP tools",
+        "operationId": "getTools",
+        "tags": ["Tools"],
+        "responses": {
+          "200": {
+            "description": "List of available tools",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "tools": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Tool"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mcp/projects/list": {
+      "post": {
+        "summary": "List projects",
+        "description": "Get a list of all projects for the authenticated user",
+        "operationId": "listProjects",
+        "tags": ["Projects"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "page": {
+                    "type": "number",
+                    "default": 1
+                  },
+                  "limit": {
+                    "type": "number",
+                    "default": 10
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "List of projects"
+          }
+        }
+      }
+    },
+    "/mcp/projects/get": {
+      "post": {
+        "summary": "Get project",
+        "description": "Get a single project by ID",
+        "operationId": "getProject",
+        "tags": ["Projects"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["project_id"],
+                "properties": {
+                  "project_id": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Project details"
+          }
+        }
+      }
+    },
+    "/mcp/projects/create": {
+      "post": {
+        "summary": "Create project",
+        "description": "Create a new project",
+        "operationId": "createProject",
+        "tags": ["Projects"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["name"],
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": ["active", "completed", "archived"]
+                  },
+                  "database_schema": {
+                    "type": "object",
+                    "description": "Database schema as JSONB object"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Project created"
+          }
+        }
+      }
+    },
+    "/mcp/projects/update": {
+      "post": {
+        "summary": "Update project",
+        "description": "Update an existing project",
+        "operationId": "updateProject",
+        "tags": ["Projects"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["project_id"],
+                "properties": {
+                  "project_id": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "status": {
+                    "type": "string"
+                  },
+                  "database_schema": {
+                    "type": "object",
+                    "description": "Database schema as JSONB object"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Project updated"
+          }
+        }
+      }
+    },
+    "/mcp/projects/delete": {
+      "post": {
+        "summary": "Delete project",
+        "description": "Delete a project",
+        "operationId": "deleteProject",
+        "tags": ["Projects"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["project_id"],
+                "properties": {
+                  "project_id": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Project deleted"
+          }
+        }
+      }
+    },
+    "/mcp/stacks/list": {
+      "post": {
+        "summary": "List stacks",
+        "description": "Get a list of stacks, optionally filtered by project_id",
+        "operationId": "listStacks",
+        "tags": ["Stacks"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "project_id": {
+                    "type": "string"
+                  },
+                  "page": {
+                    "type": "number"
+                  },
+                  "limit": {
+                    "type": "number"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "List of stacks"
+          }
+        }
+      }
+    },
+    "/mcp/stacks/get": {
+      "post": {
+        "summary": "Get stack",
+        "description": "Get a single stack by ID",
+        "operationId": "getStack",
+        "tags": ["Stacks"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["stack_id"],
+                "properties": {
+                  "stack_id": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Stack details"
+          }
+        }
+      }
+    },
+    "/mcp/stacks/create": {
+      "post": {
+        "summary": "Create stack",
+        "description": "Create a new stack",
+        "operationId": "createStack",
+        "tags": ["Stacks"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["project_id", "name"],
+                "properties": {
+                  "project_id": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "technology": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Stack created"
+          }
+        }
+      }
+    },
+    "/mcp/stacks/update": {
+      "post": {
+        "summary": "Update stack",
+        "description": "Update an existing stack",
+        "operationId": "updateStack",
+        "tags": ["Stacks"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["stack_id"],
+                "properties": {
+                  "stack_id": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "technology": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Stack updated"
+          }
+        }
+      }
+    },
+    "/mcp/stacks/delete": {
+      "post": {
+        "summary": "Delete stack",
+        "description": "Delete a stack",
+        "operationId": "deleteStack",
+        "tags": ["Stacks"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["stack_id"],
+                "properties": {
+                  "stack_id": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Stack deleted"
+          }
+        }
+      }
+    },
+    "/mcp/roadmaps/list": {
+      "post": {
+        "summary": "List roadmaps",
+        "description": "Get a list of roadmaps for a project",
+        "operationId": "listRoadmaps",
+        "tags": ["Roadmaps"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["project_id"],
+                "properties": {
+                  "project_id": {
+                    "type": "string"
+                  },
+                  "page": {
+                    "type": "number"
+                  },
+                  "limit": {
+                    "type": "number"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "List of roadmaps"
+          }
+        }
+      }
+    },
+    "/mcp/roadmaps/get": {
+      "post": {
+        "summary": "Get roadmap",
+        "description": "Get a single roadmap with tasks and subtasks",
+        "operationId": "getRoadmap",
+        "tags": ["Roadmaps"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["roadmap_id"],
+                "properties": {
+                  "roadmap_id": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Roadmap details"
+          }
+        }
+      }
+    },
+    "/mcp/roadmaps/create": {
+      "post": {
+        "summary": "Create roadmap",
+        "description": "Create a new roadmap",
+        "operationId": "createRoadmap",
+        "tags": ["Roadmaps"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["project_id", "name"],
+                "properties": {
+                  "project_id": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": ["draft", "active", "completed"]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Roadmap created"
+          }
+        }
+      }
+    },
+    "/mcp/roadmaps/update": {
+      "post": {
+        "summary": "Update roadmap",
+        "description": "Update an existing roadmap",
+        "operationId": "updateRoadmap",
+        "tags": ["Roadmaps"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["roadmap_id"],
+                "properties": {
+                  "roadmap_id": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "status": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Roadmap updated"
+          }
+        }
+      }
+    },
+    "/mcp/roadmaps/delete": {
+      "post": {
+        "summary": "Delete roadmap",
+        "description": "Delete a roadmap",
+        "operationId": "deleteRoadmap",
+        "tags": ["Roadmaps"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["roadmap_id"],
+                "properties": {
+                  "roadmap_id": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Roadmap deleted"
+          }
+        }
+      }
+    },
+    "/mcp/tasks/list": {
+      "post": {
+        "summary": "List tasks",
+        "description": "Get a list of tasks for a roadmap",
+        "operationId": "listTasks",
+        "tags": ["Tasks"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["roadmap_id"],
+                "properties": {
+                  "roadmap_id": {
+                    "type": "string"
+                  },
+                  "page": {
+                    "type": "number"
+                  },
+                  "limit": {
+                    "type": "number"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "List of tasks"
+          }
+        }
+      }
+    },
+    "/mcp/tasks/get": {
+      "post": {
+        "summary": "Get task",
+        "description": "Get a single task with subtasks",
+        "operationId": "getTask",
+        "tags": ["Tasks"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["task_id"],
+                "properties": {
+                  "task_id": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Task details"
+          }
+        }
+      }
+    },
+    "/mcp/tasks/create": {
+      "post": {
+        "summary": "Create task",
+        "description": "Create a new task",
+        "operationId": "createTask",
+        "tags": ["Tasks"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["roadmap_id", "name"],
+                "properties": {
+                  "roadmap_id": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": ["pending", "in_progress", "completed", "blocked"]
+                  },
+                  "priority": {
+                    "type": "string",
+                    "enum": ["low", "medium", "high"]
+                  },
+                  "due_date": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Task created"
+          }
+        }
+      }
+    },
+    "/mcp/tasks/update": {
+      "post": {
+        "summary": "Update task",
+        "description": "Update an existing task",
+        "operationId": "updateTask",
+        "tags": ["Tasks"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["task_id"],
+                "properties": {
+                  "task_id": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "status": {
+                    "type": "string"
+                  },
+                  "priority": {
+                    "type": "string"
+                  },
+                  "due_date": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Task updated"
+          }
+        }
+      }
+    },
+    "/mcp/tasks/delete": {
+      "post": {
+        "summary": "Delete task",
+        "description": "Delete a task",
+        "operationId": "deleteTask",
+        "tags": ["Tasks"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["task_id"],
+                "properties": {
+                  "task_id": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Task deleted"
+          }
+        }
+      }
+    },
+    "/mcp/subtasks/list": {
+      "post": {
+        "summary": "List subtasks",
+        "description": "Get a list of subtasks for a task",
+        "operationId": "listSubtasks",
+        "tags": ["Subtasks"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["task_id"],
+                "properties": {
+                  "task_id": {
+                    "type": "string"
+                  },
+                  "page": {
+                    "type": "number"
+                  },
+                  "limit": {
+                    "type": "number"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "List of subtasks"
+          }
+        }
+      }
+    },
+    "/mcp/subtasks/get": {
+      "post": {
+        "summary": "Get subtask",
+        "description": "Get a single subtask",
+        "operationId": "getSubtask",
+        "tags": ["Subtasks"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["subtask_id"],
+                "properties": {
+                  "subtask_id": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Subtask details"
+          }
+        }
+      }
+    },
+    "/mcp/subtasks/create": {
+      "post": {
+        "summary": "Create subtask",
+        "description": "Create a new subtask",
+        "operationId": "createSubtask",
+        "tags": ["Subtasks"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["task_id", "name"],
+                "properties": {
+                  "task_id": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "completed": {
+                    "type": "boolean"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Subtask created"
+          }
+        }
+      }
+    },
+    "/mcp/subtasks/update": {
+      "post": {
+        "summary": "Update subtask",
+        "description": "Update an existing subtask",
+        "operationId": "updateSubtask",
+        "tags": ["Subtasks"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["subtask_id"],
+                "properties": {
+                  "subtask_id": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "completed": {
+                    "type": "boolean"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Subtask updated"
+          }
+        }
+      }
+    },
+    "/mcp/subtasks/delete": {
+      "post": {
+        "summary": "Delete subtask",
+        "description": "Delete a subtask",
+        "operationId": "deleteSubtask",
+        "tags": ["Subtasks"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["subtask_id"],
+                "properties": {
+                  "subtask_id": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Subtask deleted"
+          }
+        }
+      }
+    }
+  }
+}
+
