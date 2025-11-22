@@ -27,18 +27,6 @@ export default function StacksTable({ stacks }: StacksTableProps) {
       ),
     },
     {
-      accessorKey: 'technology',
-      header: 'Technology',
-      cell: (info) => {
-        const value = info.getValue() as string | undefined
-        return (
-          <div className="text-gray-600">
-            {value || <span className="text-gray-400">—</span>}
-          </div>
-        )
-      },
-    },
-    {
       accessorKey: 'description',
       header: 'Description',
       cell: (info) => {

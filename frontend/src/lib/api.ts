@@ -19,10 +19,8 @@ export interface Stack {
   id: string
   project_id: string
   name: string
-  technology?: string
   description?: string
   created_at: string
-  updated_at: string
 }
 
 export interface Roadmap {
