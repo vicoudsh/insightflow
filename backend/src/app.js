@@ -70,8 +70,19 @@ app.get('/health', (req, res) => {
 })
 
 // Get base URL from environment (defaults to localhost for development)
+// Supports both API_BASE_URL and SERVER_URL environment variables
 const getBaseUrl = () => {
-  return process.env.API_BASE_URL || process.env.SERVER_URL || `http://localhost:${process.env.PORT || 3001}`
+  // Check for explicit base URL first (should not include port if already in URL)
+  if (process.env.API_BASE_URL) {
+    // Remove trailing slash if present
+    return process.env.API_BASE_URL.replace(/\/$/, '')
+  }
+  if (process.env.SERVER_URL) {
+    // Remove trailing slash if present
+    return process.env.SERVER_URL.replace(/\/$/, '')
+  }
+  // Fallback to localhost with port
+  return `http://localhost:${process.env.PORT || 3001}`
 }
 
 // Serve .well-known/ai-plugin.json for OpenAI plugin discovery (dynamic URL)
@@ -117,17 +128,24 @@ app.get('/.well-known/openapi.yaml', async (req, res) => {
 app.get('/.well-known/openapi.json', async (req, res) => {
   try {
     const baseUrl = getBaseUrl()
+    console.log('🌐 [OPENAPI] Base URL from environment:', baseUrl)
+    console.log('🌐 [OPENAPI] API_BASE_URL:', process.env.API_BASE_URL)
+    console.log('🌐 [OPENAPI] SERVER_URL:', process.env.SERVER_URL)
+    console.log('🌐 [OPENAPI] PORT:', process.env.PORT)
+    
     const jsonPath = join(__dirname, '..', '.well-known', 'openapi.json')
     const jsonContent = await readFile(jsonPath, 'utf8')
     const schema = JSON.parse(jsonContent)
     
-    // Update server URLs dynamically
+    // Update server URLs dynamically - always use the configured base URL
     schema.servers = [
       {
         url: baseUrl,
-        description: process.env.NODE_ENV === 'production' ? 'Production server' : 'Development server'
+        description: baseUrl.includes('localhost') ? 'Development server' : 'Production server'
       }
     ]
+    
+    console.log('🌐 [OPENAPI] Serving schema with server URL:', schema.servers[0].url)
     
     res.setHeader('Content-Type', 'application/json')
     res.json(schema)
@@ -145,11 +163,11 @@ app.get('/openapi.json', async (req, res) => {
     const jsonContent = await readFile(jsonPath, 'utf8')
     const schema = JSON.parse(jsonContent)
     
-    // Update server URLs dynamically
+    // Update server URLs dynamically - always use the configured base URL
     schema.servers = [
       {
         url: baseUrl,
-        description: process.env.NODE_ENV === 'production' ? 'Production server' : 'Development server'
+        description: baseUrl.includes('localhost') ? 'Development server' : 'Production server'
       }
     ]
     
