@@ -7,12 +7,22 @@ dotenv.config()
 const PORT = process.env.PORT || 3001
 const NODE_ENV = process.env.NODE_ENV || 'development'
 
+// Get base URL from environment (for logging)
+const getBaseUrl = () => {
+  return process.env.API_BASE_URL || process.env.SERVER_URL || `http://localhost:${PORT}`
+}
+
+const baseUrl = getBaseUrl()
+
 // Start server
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`)
   console.log(`📦 Environment: ${NODE_ENV}`)
-  console.log(`🔗 Health check: http://localhost:${PORT}/health`)
-  console.log(`📚 API documentation: http://localhost:${PORT}/`)
+  console.log(`🌐 Base URL: ${baseUrl}`)
+  console.log(`🔗 Health check: ${baseUrl}/health`)
+  console.log(`📚 API documentation: ${baseUrl}/`)
+  console.log(`📋 OpenAPI JSON: ${baseUrl}/.well-known/openapi.json`)
+  console.log(`🤖 Plugin manifest: ${baseUrl}/.well-known/ai-plugin.json`)
 })
 
 // Handle unhandled promise rejections

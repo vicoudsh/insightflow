@@ -8,11 +8,7 @@
   "servers": [
     {
       "url": "http://localhost:3001",
-      "description": "Local development server"
-    },
-    {
-      "url": "https://your-domain.com",
-      "description": "Production server"
+      "description": "Local development server (default - will be replaced dynamically based on API_BASE_URL or SERVER_URL environment variable)"
     }
   ],
   "security": [

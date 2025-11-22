@@ -6,6 +6,7 @@ import rateLimit from 'express-rate-limit'
 import dotenv from 'dotenv'
 import { fileURLToPath } from 'url'
 import { dirname, join } from 'path'
+import { readFile } from 'fs/promises'
 
 // Import REST API routes
 import projectsRoutes from './routes/projects.js'
@@ -68,28 +69,96 @@ app.get('/health', (req, res) => {
   })
 })
 
-// Serve .well-known/ai-plugin.json for OpenAI plugin discovery
-app.get('/.well-known/ai-plugin.json', (req, res) => {
-  res.setHeader('Content-Type', 'application/json')
-  res.sendFile(join(__dirname, '..', '.well-known', 'ai-plugin.json'))
+// Get base URL from environment (defaults to localhost for development)
+const getBaseUrl = () => {
+  return process.env.API_BASE_URL || process.env.SERVER_URL || `http://localhost:${process.env.PORT || 3001}`
+}
+
+// Serve .well-known/ai-plugin.json for OpenAI plugin discovery (dynamic URL)
+app.get('/.well-known/ai-plugin.json', async (req, res) => {
+  try {
+    const baseUrl = getBaseUrl()
+    const pluginPath = join(__dirname, '..', '.well-known', 'ai-plugin.json')
+    const data = await readFile(pluginPath, 'utf8')
+    const plugin = JSON.parse(data)
+    
+    // Update API URL dynamically based on environment
+    plugin.api.url = `${baseUrl}/.well-known/openapi.json`
+    
+    res.setHeader('Content-Type', 'application/json')
+    res.json(plugin)
+  } catch (error) {
+    console.error('Error reading ai-plugin.json:', error)
+    res.status(500).json({ error: 'Failed to load plugin manifest' })
+  }
 })
 
-// Serve OpenAPI specification (YAML)
-app.get('/.well-known/openapi.yaml', (req, res) => {
-  res.setHeader('Content-Type', 'text/yaml')
-  res.sendFile(join(__dirname, '..', '.well-known', 'openapi.yaml'))
+// Serve OpenAPI specification (YAML) - dynamic server URL
+app.get('/.well-known/openapi.yaml', async (req, res) => {
+  try {
+    const baseUrl = getBaseUrl()
+    const yamlPath = join(__dirname, '..', '.well-known', 'openapi.yaml')
+    const yamlContent = await readFile(yamlPath, 'utf8')
+    
+    // Replace server URLs dynamically
+    const dynamicYaml = yamlContent
+      .replace(/http:\/\/localhost:3001/g, baseUrl)
+      .replace(/https:\/\/your-domain\.com/g, baseUrl)
+    
+    res.setHeader('Content-Type', 'text/yaml')
+    res.send(dynamicYaml)
+  } catch (error) {
+    console.error('Error serving openapi.yaml:', error)
+    res.status(500).json({ error: 'Failed to load OpenAPI schema' })
+  }
 })
 
-// Serve OpenAPI specification (JSON) - preferred format
-app.get('/.well-known/openapi.json', (req, res) => {
-  res.setHeader('Content-Type', 'application/json')
-  res.sendFile(join(__dirname, '..', '.well-known', 'openapi.json'))
+// Serve OpenAPI specification (JSON) - preferred format (dynamic server URL)
+app.get('/.well-known/openapi.json', async (req, res) => {
+  try {
+    const baseUrl = getBaseUrl()
+    const jsonPath = join(__dirname, '..', '.well-known', 'openapi.json')
+    const jsonContent = await readFile(jsonPath, 'utf8')
+    const schema = JSON.parse(jsonContent)
+    
+    // Update server URLs dynamically
+    schema.servers = [
+      {
+        url: baseUrl,
+        description: process.env.NODE_ENV === 'production' ? 'Production server' : 'Development server'
+      }
+    ]
+    
+    res.setHeader('Content-Type', 'application/json')
+    res.json(schema)
+  } catch (error) {
+    console.error('Error serving openapi.json:', error)
+    res.status(500).json({ error: 'Failed to load OpenAPI schema' })
+  }
 })
 
 // Also support /openapi.json as alternative path
-app.get('/openapi.json', (req, res) => {
-  res.setHeader('Content-Type', 'application/json')
-  res.sendFile(join(__dirname, '..', '.well-known', 'openapi.json'))
+app.get('/openapi.json', async (req, res) => {
+  try {
+    const baseUrl = getBaseUrl()
+    const jsonPath = join(__dirname, '..', '.well-known', 'openapi.json')
+    const jsonContent = await readFile(jsonPath, 'utf8')
+    const schema = JSON.parse(jsonContent)
+    
+    // Update server URLs dynamically
+    schema.servers = [
+      {
+        url: baseUrl,
+        description: process.env.NODE_ENV === 'production' ? 'Production server' : 'Development server'
+      }
+    ]
+    
+    res.setHeader('Content-Type', 'application/json')
+    res.json(schema)
+  } catch (error) {
+    console.error('Error serving openapi.json:', error)
+    res.status(500).json({ error: 'Failed to load OpenAPI schema' })
+  }
 })
 
 // REST API routes
