@@ -39,6 +39,237 @@
             "type": "object"
           }
         }
+      },
+      "Project": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Project UUID"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 255,
+            "description": "Project name"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 1000,
+            "description": "Project description"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["active", "completed", "archived"],
+            "default": "active",
+            "description": "Project status"
+          },
+          "database_schema": {
+            "type": "object",
+            "nullable": true,
+            "description": "Database schema as JSONB object"
+          },
+          "user_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Owner user UUID"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Creation timestamp"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Last update timestamp"
+          }
+        },
+        "required": ["id", "name", "user_id", "created_at", "updated_at"]
+      },
+      "Stack": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Stack UUID"
+          },
+          "project_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Parent project UUID"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 255,
+            "description": "Stack name"
+          },
+          "technology": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 255,
+            "description": "Technology name"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 1000,
+            "description": "Stack description"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Creation timestamp"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Last update timestamp"
+          }
+        },
+        "required": ["id", "project_id", "name", "created_at", "updated_at"]
+      },
+      "Roadmap": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Roadmap UUID"
+          },
+          "project_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Parent project UUID"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 255,
+            "description": "Roadmap name"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 1000,
+            "description": "Roadmap description"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["draft", "active", "completed"],
+            "default": "draft",
+            "description": "Roadmap status"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Creation timestamp"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Last update timestamp"
+          }
+        },
+        "required": ["id", "project_id", "name", "created_at", "updated_at"]
+      },
+      "Task": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Task UUID"
+          },
+          "roadmap_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Parent roadmap UUID"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 255,
+            "description": "Task name"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 1000,
+            "description": "Task description"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["pending", "in_progress", "completed", "blocked"],
+            "default": "pending",
+            "description": "Task status"
+          },
+          "priority": {
+            "type": "string",
+            "enum": ["low", "medium", "high"],
+            "default": "medium",
+            "description": "Task priority"
+          },
+          "due_date": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "description": "Due date timestamp"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Creation timestamp"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Last update timestamp"
+          }
+        },
+        "required": ["id", "roadmap_id", "name", "created_at", "updated_at"]
+      },
+      "Subtask": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Subtask UUID"
+          },
+          "task_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Parent task UUID"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 255,
+            "description": "Subtask name"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 1000,
+            "description": "Subtask description"
+          },
+          "completed": {
+            "type": "boolean",
+            "default": false,
+            "description": "Completion status"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Creation timestamp"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Last update timestamp"
+          }
+        },
+        "required": ["id", "task_id", "name", "created_at", "updated_at"]
       }
     }
   },
@@ -98,7 +329,29 @@
         },
         "responses": {
           "200": {
-            "description": "List of projects"
+            "description": "List of projects",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "tool": {
+                      "type": "string",
+                      "example": "list_projects"
+                    },
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "result": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Project"
+                      }
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -127,7 +380,26 @@
         },
         "responses": {
           "200": {
-            "description": "Project details"
+            "description": "Project details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "tool": {
+                      "type": "string",
+                      "example": "get_project"
+                    },
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "result": {
+                      "$ref": "#/components/schemas/Project"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -167,7 +439,26 @@
         },
         "responses": {
           "201": {
-            "description": "Project created"
+            "description": "Project created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "tool": {
+                      "type": "string",
+                      "example": "create_project"
+                    },
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "result": {
+                      "$ref": "#/components/schemas/Project"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -209,7 +500,26 @@
         },
         "responses": {
           "200": {
-            "description": "Project updated"
+            "description": "Project updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "tool": {
+                      "type": "string",
+                      "example": "update_project"
+                    },
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "result": {
+                      "$ref": "#/components/schemas/Project"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -238,7 +548,32 @@
         },
         "responses": {
           "200": {
-            "description": "Project deleted"
+            "description": "Project deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "tool": {
+                      "type": "string",
+                      "example": "delete_project"
+                    },
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "result": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string",
+                          "example": "Project deleted successfully"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -271,7 +606,29 @@
         },
         "responses": {
           "200": {
-            "description": "List of stacks"
+            "description": "List of stacks",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "tool": {
+                      "type": "string",
+                      "example": "list_stacks"
+                    },
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "result": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Stack"
+                      }
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -300,7 +657,26 @@
         },
         "responses": {
           "200": {
-            "description": "Stack details"
+            "description": "Stack details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "tool": {
+                      "type": "string",
+                      "example": "get_stack"
+                    },
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "result": {
+                      "$ref": "#/components/schemas/Stack"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -338,7 +714,26 @@
         },
         "responses": {
           "201": {
-            "description": "Stack created"
+            "description": "Stack created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "tool": {
+                      "type": "string",
+                      "example": "create_stack"
+                    },
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "result": {
+                      "$ref": "#/components/schemas/Stack"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -376,7 +771,26 @@
         },
         "responses": {
           "200": {
-            "description": "Stack updated"
+            "description": "Stack updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "tool": {
+                      "type": "string",
+                      "example": "update_stack"
+                    },
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "result": {
+                      "$ref": "#/components/schemas/Stack"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -405,7 +819,32 @@
         },
         "responses": {
           "200": {
-            "description": "Stack deleted"
+            "description": "Stack deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "tool": {
+                      "type": "string",
+                      "example": "delete_stack"
+                    },
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "result": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string",
+                          "example": "Stack deleted successfully"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -440,7 +879,29 @@
         },
         "responses": {
           "200": {
-            "description": "List of roadmaps"
+            "description": "List of roadmaps",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "tool": {
+                      "type": "string",
+                      "example": "list_roadmaps"
+                    },
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "result": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Roadmap"
+                      }
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -469,7 +930,26 @@
         },
         "responses": {
           "200": {
-            "description": "Roadmap details"
+            "description": "Roadmap details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "tool": {
+                      "type": "string",
+                      "example": "get_roadmap"
+                    },
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "result": {
+                      "$ref": "#/components/schemas/Roadmap"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -508,7 +988,26 @@
         },
         "responses": {
           "201": {
-            "description": "Roadmap created"
+            "description": "Roadmap created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "tool": {
+                      "type": "string",
+                      "example": "create_roadmap"
+                    },
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "result": {
+                      "$ref": "#/components/schemas/Roadmap"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -546,7 +1045,26 @@
         },
         "responses": {
           "200": {
-            "description": "Roadmap updated"
+            "description": "Roadmap updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "tool": {
+                      "type": "string",
+                      "example": "update_roadmap"
+                    },
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "result": {
+                      "$ref": "#/components/schemas/Roadmap"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -575,7 +1093,32 @@
         },
         "responses": {
           "200": {
-            "description": "Roadmap deleted"
+            "description": "Roadmap deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "tool": {
+                      "type": "string",
+                      "example": "delete_roadmap"
+                    },
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "result": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string",
+                          "example": "Roadmap deleted successfully"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -610,7 +1153,29 @@
         },
         "responses": {
           "200": {
-            "description": "List of tasks"
+            "description": "List of tasks",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "tool": {
+                      "type": "string",
+                      "example": "list_tasks"
+                    },
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "result": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Task"
+                      }
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -639,7 +1204,26 @@
         },
         "responses": {
           "200": {
-            "description": "Task details"
+            "description": "Task details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "tool": {
+                      "type": "string",
+                      "example": "get_task"
+                    },
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "result": {
+                      "$ref": "#/components/schemas/Task"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -685,7 +1269,26 @@
         },
         "responses": {
           "201": {
-            "description": "Task created"
+            "description": "Task created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "tool": {
+                      "type": "string",
+                      "example": "create_task"
+                    },
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "result": {
+                      "$ref": "#/components/schemas/Task"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -729,7 +1332,26 @@
         },
         "responses": {
           "200": {
-            "description": "Task updated"
+            "description": "Task updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "tool": {
+                      "type": "string",
+                      "example": "update_task"
+                    },
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "result": {
+                      "$ref": "#/components/schemas/Task"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -758,7 +1380,32 @@
         },
         "responses": {
           "200": {
-            "description": "Task deleted"
+            "description": "Task deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "tool": {
+                      "type": "string",
+                      "example": "delete_task"
+                    },
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "result": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string",
+                          "example": "Task deleted successfully"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -793,7 +1440,29 @@
         },
         "responses": {
           "200": {
-            "description": "List of subtasks"
+            "description": "List of subtasks",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "tool": {
+                      "type": "string",
+                      "example": "list_subtasks"
+                    },
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "result": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Subtask"
+                      }
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -822,7 +1491,26 @@
         },
         "responses": {
           "200": {
-            "description": "Subtask details"
+            "description": "Subtask details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "tool": {
+                      "type": "string",
+                      "example": "get_subtask"
+                    },
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "result": {
+                      "$ref": "#/components/schemas/Subtask"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -860,7 +1548,26 @@
         },
         "responses": {
           "201": {
-            "description": "Subtask created"
+            "description": "Subtask created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "tool": {
+                      "type": "string",
+                      "example": "create_subtask"
+                    },
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "result": {
+                      "$ref": "#/components/schemas/Subtask"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -898,7 +1605,26 @@
         },
         "responses": {
           "200": {
-            "description": "Subtask updated"
+            "description": "Subtask updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "tool": {
+                      "type": "string",
+                      "example": "update_subtask"
+                    },
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "result": {
+                      "$ref": "#/components/schemas/Subtask"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -927,7 +1653,32 @@
         },
         "responses": {
           "200": {
-            "description": "Subtask deleted"
+            "description": "Subtask deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "tool": {
+                      "type": "string",
+                      "example": "delete_subtask"
+                    },
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "result": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string",
+                          "example": "Subtask deleted successfully"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
