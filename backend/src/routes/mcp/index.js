@@ -374,8 +374,8 @@ router.get('/tools', (req, res) => {
   })
 })
 
-// All other MCP routes require authentication
-router.use(authenticate)
+// MCP routes use service role authentication (backend handles auth, not users)
+// No authentication middleware needed - backend uses service role key internally
 
 // Projects MCP tools
 router.post('/projects/list', listProjects)

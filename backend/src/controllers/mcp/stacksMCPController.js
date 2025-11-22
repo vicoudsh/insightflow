@@ -5,13 +5,13 @@ import { apiClient } from '../../utils/mcp/apiClient.js'
  */
 export const listStacks = async (req, res, next) => {
   try {
-    const token = req.token
     const { project_id, page = 1, limit = 10 } = req.body
 
     const query = { page, limit }
     if (project_id) query.project_id = project_id
 
-    const result = await apiClient.getStacks(token, query)
+    // No token needed - backend uses service role key internally
+    const result = await apiClient.getStacks(query)
 
     if (!result.success) {
       return res.status(result.status || 500).json({
@@ -35,7 +35,6 @@ export const listStacks = async (req, res, next) => {
  */
 export const getStack = async (req, res, next) => {
   try {
-    const token = req.token
     const { stack_id } = req.body
 
     if (!stack_id) {
@@ -46,7 +45,8 @@ export const getStack = async (req, res, next) => {
       })
     }
 
-    const result = await apiClient.getStack(token, stack_id)
+    // No token needed - backend uses service role key internally
+    const result = await apiClient.getStack(stack_id)
 
     if (!result.success) {
       return res.status(result.status || 500).json({
@@ -70,7 +70,6 @@ export const getStack = async (req, res, next) => {
  */
 export const createStack = async (req, res, next) => {
   try {
-    const token = req.token
     const { project_id, name, technology, description } = req.body
 
     if (!project_id || !name) {
@@ -81,7 +80,8 @@ export const createStack = async (req, res, next) => {
       })
     }
 
-    const result = await apiClient.createStack(token, {
+    // No token needed - backend uses service role key internally
+    const result = await apiClient.createStack({
       project_id,
       name,
       technology,
@@ -110,7 +110,6 @@ export const createStack = async (req, res, next) => {
  */
 export const updateStack = async (req, res, next) => {
   try {
-    const token = req.token
     const { stack_id, name, technology, description } = req.body
 
     if (!stack_id) {
@@ -126,7 +125,8 @@ export const updateStack = async (req, res, next) => {
     if (technology !== undefined) updateData.technology = technology
     if (description !== undefined) updateData.description = description
 
-    const result = await apiClient.updateStack(token, stack_id, updateData)
+    // No token needed - backend uses service role key internally
+    const result = await apiClient.updateStack(stack_id, updateData)
 
     if (!result.success) {
       return res.status(result.status || 500).json({
@@ -150,7 +150,6 @@ export const updateStack = async (req, res, next) => {
  */
 export const deleteStack = async (req, res, next) => {
   try {
-    const token = req.token
     const { stack_id } = req.body
 
     if (!stack_id) {
@@ -161,7 +160,8 @@ export const deleteStack = async (req, res, next) => {
       })
     }
 
-    const result = await apiClient.deleteStack(token, stack_id)
+    // No token needed - backend uses service role key internally
+    const result = await apiClient.deleteStack(stack_id)
 
     if (!result.success) {
       return res.status(result.status || 500).json({

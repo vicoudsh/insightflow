@@ -5,6 +5,7 @@ dotenv.config()
 
 const supabaseUrl = process.env.SUPABASE_URL
 const supabaseAnonKey = process.env.SUPABASE_ANON_KEY
+const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
 
 /**
  * Authentication middleware
@@ -34,11 +35,35 @@ export const authenticate = async (req, res, next) => {
     console.log('🔐 [AUTH MIDDLEWARE] Token extracted, length:', token.length)
     console.log('🔐 [AUTH MIDDLEWARE] Token preview:', token.substring(0, 20) + '...')
 
+    // Check if token is service role key (for internal/backend authentication)
+    if (supabaseServiceRoleKey && token === supabaseServiceRoleKey) {
+      console.log('🔐 [AUTH MIDDLEWARE] Service role key detected - using service role client')
+      
+      // Create service role client (bypasses RLS)
+      const serviceRoleSupabase = createClient(supabaseUrl, supabaseServiceRoleKey, {
+        auth: {
+          autoRefreshToken: false,
+          persistSession: false,
+        },
+      })
+
+      // Attach service role client to request
+      req.user = null // No user for service role
+      req.token = token
+      req.supabase = serviceRoleSupabase // Service role client bypasses RLS
+      req.isServiceRole = true // Flag to indicate service role auth
+
+      console.log('✅ [AUTH MIDDLEWARE] Service role authentication successful')
+      console.log('✅ [AUTH MIDDLEWARE] Using service role client (bypasses RLS)')
+      return next()
+    }
+
+    // Otherwise, verify as user token
     // Create a Supabase client with anon key
     const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
     // Verify token and get user
-    console.log('🔐 [AUTH MIDDLEWARE] Verifying token with Supabase...')
+    console.log('🔐 [AUTH MIDDLEWARE] Verifying token as user token...')
     const {
       data: { user },
       error,
@@ -73,6 +98,7 @@ export const authenticate = async (req, res, next) => {
     req.user = user
     req.token = token
     req.supabase = authenticatedSupabase // Authenticated client with RLS
+    req.isServiceRole = false // Flag to indicate user auth
 
     console.log('✅ [AUTH MIDDLEWARE] Request authenticated, proceeding to route handler')
     next()

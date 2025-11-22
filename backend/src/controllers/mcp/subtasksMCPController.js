@@ -5,7 +5,6 @@ import { apiClient } from '../../utils/mcp/apiClient.js'
  */
 export const listSubtasks = async (req, res, next) => {
   try {
-    const token = req.token
     const { task_id, page = 1, limit = 10 } = req.body
 
     if (!task_id) {
@@ -16,7 +15,8 @@ export const listSubtasks = async (req, res, next) => {
       })
     }
 
-    const result = await apiClient.getSubtasks(token, { task_id, page, limit })
+    // No token needed - backend uses service role key internally
+    const result = await apiClient.getSubtasks( { task_id, page, limit })
 
     if (!result.success) {
       return res.status(result.status || 500).json({
@@ -40,7 +40,6 @@ export const listSubtasks = async (req, res, next) => {
  */
 export const getSubtask = async (req, res, next) => {
   try {
-    const token = req.token
     const { subtask_id } = req.body
 
     if (!subtask_id) {
@@ -51,7 +50,8 @@ export const getSubtask = async (req, res, next) => {
       })
     }
 
-    const result = await apiClient.getSubtask(token, subtask_id)
+    // No token needed - backend uses service role key internally
+    const result = await apiClient.getSubtask(subtask_id)
 
     if (!result.success) {
       return res.status(result.status || 500).json({
@@ -75,7 +75,6 @@ export const getSubtask = async (req, res, next) => {
  */
 export const createSubtask = async (req, res, next) => {
   try {
-    const token = req.token
     const { task_id, name, description, completed } = req.body
 
     if (!task_id || !name) {
@@ -86,7 +85,8 @@ export const createSubtask = async (req, res, next) => {
       })
     }
 
-    const result = await apiClient.createSubtask(token, {
+    // No token needed - backend uses service role key internally
+    const result = await apiClient.createSubtask({
       task_id,
       name,
       description,
@@ -115,7 +115,6 @@ export const createSubtask = async (req, res, next) => {
  */
 export const updateSubtask = async (req, res, next) => {
   try {
-    const token = req.token
     const { subtask_id, name, description, completed } = req.body
 
     if (!subtask_id) {
@@ -131,7 +130,8 @@ export const updateSubtask = async (req, res, next) => {
     if (description !== undefined) updateData.description = description
     if (completed !== undefined) updateData.completed = completed
 
-    const result = await apiClient.updateSubtask(token, subtask_id, updateData)
+    // No token needed - backend uses service role key internally
+    const result = await apiClient.updateSubtask(subtask_id, updateData)
 
     if (!result.success) {
       return res.status(result.status || 500).json({
@@ -155,7 +155,6 @@ export const updateSubtask = async (req, res, next) => {
  */
 export const deleteSubtask = async (req, res, next) => {
   try {
-    const token = req.token
     const { subtask_id } = req.body
 
     if (!subtask_id) {
@@ -166,7 +165,8 @@ export const deleteSubtask = async (req, res, next) => {
       })
     }
 
-    const result = await apiClient.deleteSubtask(token, subtask_id)
+    // No token needed - backend uses service role key internally
+    const result = await apiClient.deleteSubtask(subtask_id)
 
     if (!result.success) {
       return res.status(result.status || 500).json({

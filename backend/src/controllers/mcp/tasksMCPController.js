@@ -5,7 +5,6 @@ import { apiClient } from '../../utils/mcp/apiClient.js'
  */
 export const listTasks = async (req, res, next) => {
   try {
-    const token = req.token
     const { roadmap_id, page = 1, limit = 10 } = req.body
 
     if (!roadmap_id) {
@@ -16,7 +15,8 @@ export const listTasks = async (req, res, next) => {
       })
     }
 
-    const result = await apiClient.getTasks(token, { roadmap_id, page, limit })
+    // No token needed - backend uses service role key internally
+    const result = await apiClient.getTasks( { roadmap_id, page, limit })
 
     if (!result.success) {
       return res.status(result.status || 500).json({
@@ -40,7 +40,6 @@ export const listTasks = async (req, res, next) => {
  */
 export const getTask = async (req, res, next) => {
   try {
-    const token = req.token
     const { task_id } = req.body
 
     if (!task_id) {
@@ -51,7 +50,8 @@ export const getTask = async (req, res, next) => {
       })
     }
 
-    const result = await apiClient.getTask(token, task_id)
+    // No token needed - backend uses service role key internally
+    const result = await apiClient.getTask(task_id)
 
     if (!result.success) {
       return res.status(result.status || 500).json({
@@ -75,7 +75,6 @@ export const getTask = async (req, res, next) => {
  */
 export const createTask = async (req, res, next) => {
   try {
-    const token = req.token
     const { roadmap_id, name, description, status, priority, due_date } = req.body
 
     if (!roadmap_id || !name) {
@@ -86,7 +85,8 @@ export const createTask = async (req, res, next) => {
       })
     }
 
-    const result = await apiClient.createTask(token, {
+    // No token needed - backend uses service role key internally
+    const result = await apiClient.createTask({
       roadmap_id,
       name,
       description,
@@ -117,7 +117,6 @@ export const createTask = async (req, res, next) => {
  */
 export const updateTask = async (req, res, next) => {
   try {
-    const token = req.token
     const { task_id, name, description, status, priority, due_date } = req.body
 
     if (!task_id) {
@@ -135,7 +134,8 @@ export const updateTask = async (req, res, next) => {
     if (priority !== undefined) updateData.priority = priority
     if (due_date !== undefined) updateData.due_date = due_date
 
-    const result = await apiClient.updateTask(token, task_id, updateData)
+    // No token needed - backend uses service role key internally
+    const result = await apiClient.updateTask(task_id, updateData)
 
     if (!result.success) {
       return res.status(result.status || 500).json({
@@ -159,7 +159,6 @@ export const updateTask = async (req, res, next) => {
  */
 export const deleteTask = async (req, res, next) => {
   try {
-    const token = req.token
     const { task_id } = req.body
 
     if (!task_id) {
@@ -170,7 +169,8 @@ export const deleteTask = async (req, res, next) => {
       })
     }
 
-    const result = await apiClient.deleteTask(token, task_id)
+    // No token needed - backend uses service role key internally
+    const result = await apiClient.deleteTask(task_id)
 
     if (!result.success) {
       return res.status(result.status || 500).json({
